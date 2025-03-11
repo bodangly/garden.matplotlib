@@ -1201,6 +1201,7 @@ class FigureCanvasKivy(FocusBehavior, Widget, FigureCanvasBase):
            `motion_notify_event`, `leave_notify_event` and
            `enter_notify_event`.
         '''
+        return
         pos = args[1]
         newcoord = self.to_widget(pos[0], pos[1], relative=True)
         x = newcoord[0]
@@ -1236,7 +1237,7 @@ class FigureCanvasKivy(FocusBehavior, Widget, FigureCanvasBase):
         winch = float(w) / dpival
         hinch = float(h) / dpival
         self.figure.set_size_inches(winch, hinch, forward=False)
-        self.resize_event()
+        #self.resize_event()
         self.draw()
 
     def callback(self, *largs):
