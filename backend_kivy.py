@@ -352,7 +352,7 @@ class Show(ShowBase):
     '''mainloop needs to be overwritten to define the show() behavior for kivy
        framework.
     '''
-    def mainloop(self):
+    def mainloop(self=None):
         app = App.get_running_app()
         if app is None:
             app = MPLKivyApp(figure=my_canvas, toolbar=toolbar)
@@ -401,7 +401,7 @@ class RendererKivy(RendererBase):
         self.dpi = widget.figure.dpi
         self._markers = {}
         #  Can be enhanced by using TextToPath matplotlib, textpath.py
-        self.mathtext_parser = MathTextParser("Bitmap")
+        self.mathtext_parser = MathTextParser("agg")
         self.list_goraud_triangles = []
         self.clip_rectangles = []
         self.labels_inside_plot = []
@@ -801,7 +801,7 @@ class RendererKivy(RendererBase):
 
     def points_to_pixels(self, points):
         return points / 72.0 * self.dpi
-		
+
     def weight_as_number(self, weight):
         ''' Replaces the deprecated matplotlib function of the same name
         '''
@@ -841,7 +841,7 @@ class RendererKivy(RendererBase):
             raise ValueError('weight ' + weight + ' not valid')
 
 
-class NavigationToolbar2Kivy(NavigationToolbar2):
+class NavigationToolbar2Kivy(Widget, NavigationToolbar2):
     '''This class extends from matplotlib class NavigationToolbar2 and
        creates an action bar which is added to the main app to allow the
        following operations to the figures.
@@ -856,8 +856,13 @@ class NavigationToolbar2Kivy(NavigationToolbar2):
     '''
 
     def __init__(self, canvas, **kwargs):
+        print('THIS EXECUTING OR NOT?!?!')
+        Widget.__init__(self, **kwargs)
+        NavigationToolbar2.__init__(self, canvas)
+        if not hasattr(self, 'fbind'):
+            self.fbind = self.bind
         self.actionbar = ActionBar(pos_hint={'top': 1.0})
-        super(NavigationToolbar2Kivy, self).__init__(canvas)
+        self.canvas_figure = canvas
         self.rubberband_color = (1.0, 0.0, 0.0, 1.0)
         self.lastrect = None
         self.save_dialog = Builder.load_string(textwrap.dedent('''\
@@ -896,6 +901,7 @@ class NavigationToolbar2Kivy(NavigationToolbar2):
            added with a specific behavior given by a callback. The buttons
            properties are given by matplotlib.
         '''
+        print('IS THIS EXECUTING')
         basedir = os.path.join(rcParams['datapath'], 'images')
         actionview = ActionView()
         actionprevious = ActionPrevious(title="Navigation", with_previous=False)
